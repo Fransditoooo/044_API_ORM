@@ -22,7 +22,7 @@ db.sequelize.sync()
         console.log(err);
     })
 
-    app.post('/komik', async (req, res) => {
+app.post('/komik', async (req, res) => {
         const { title, author } = req.body;
         try {
             const komik = await db.Komik.create({ data });
@@ -35,6 +35,21 @@ db.sequelize.sync()
 app.get('/komik', async (req, res) => {
     try {
         const komik = await db.Komik.findAll();
+        res.send(komik);
+    } catch (err) {
+        res.send({ error: err.message });
+    }
+});
+
+app.put('/komik/:id', async (req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+    try {
+        const komik = await db.Komik.findByPk(id);
+        if (!komik) {
+            return res.status(404).send({ error: 'Komik not found' });
+        }
+        await komik.update(data);
         res.send(komik);
     } catch (err) {
         res.send({ error: err.message });
